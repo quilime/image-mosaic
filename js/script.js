@@ -29,7 +29,6 @@ const DOMContentLoaded = () => {
     const numIcons = 5;
 
     Alpine.data("appData", () => ({
-      imageInfo: "yuou",
       icons: Alpine.$persist([]),
       img: new Image(),
       imageLoaded: false,
