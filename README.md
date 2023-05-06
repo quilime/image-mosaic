@@ -1,6 +1,11 @@
 # Icon Mosaic
 
-## Develoipment Installation
+## TODO
+
+- [ ] Assemble Icon Set
+- [ ] Custom icons?
+
+## Development Installation
 
 ```bash
 npm install -D tailwindcss

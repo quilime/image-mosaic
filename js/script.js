@@ -1,3 +1,5 @@
+const SVG_NS = "http://www.w3.org/2000/svg";
+
 const onReady = async () => {};
 const DOMContentLoaded = () => {
   if (document.readyState !== "loading") {
@@ -7,17 +9,6 @@ const DOMContentLoaded = () => {
   document.addEventListener("DOMContentLoaded", onReady);
   document.addEventListener("alpine:init", async () => {
 
-
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    // const loader = document.getElementById("loader");
-    const output = document.getElementById("output");
-    const progressBar = document.getElementById("progress");
-
-
-    // let img = new Image();
-    const SVG_NS = "http://www.w3.org/2000/svg";
-
     // maps a value from one range to another range:
     const mapValue = (v, inMin, inMax, outMin, outMax) => ((v - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 
@@ -26,12 +17,11 @@ const DOMContentLoaded = () => {
     // is more sensitive to green and less sensitive to blue.
     const perceivedBrightness = (R, G, B) => 0.299 * R + 0.587 * G + 0.114 * B;
 
-    const numIcons = 5;
-
     Alpine.data("appData", () => ({
       icons: Alpine.$persist([]),
       img: new Image(),
       imageLoaded: false,
+      gridSize: 20,
       showGrid: false,
       showIcons: true,
       showDownloadLink: false,
@@ -64,28 +54,38 @@ const DOMContentLoaded = () => {
         });
       },
       async loadIcons() {
+        // numIcons is hardcoded for now
+        const numIcons = 5;
         let arr = [];
         for (var i = 1; i <= numIcons; i++) {
           const response = await fetch(`./static/icons/icon-${i}.svg`);
           const svgText = await response.text();
           const parser = new DOMParser();
-          arr.push(
-            parser.parseFromString(svgText, "image/svg+xml").documentElement
-          );
+          arr.push(parser.parseFromString(svgText, "image/svg+xml").documentElement);
         }
         return arr;
       },
       async generate() {
 
+        const output = document.getElementById("output");
         output.innerHTML = "";
 
-        const gridSizeSlider = document.getElementById("gridSizeSlider");
-        const gridSize = Math.round(gridSizeSlider.value);
+        const gridSize = Math.round(this.gridSize);
+
+        const canvas = document.getElementById("canvas");
         canvas.width = this.img.width;
         canvas.height = this.img.height;
+
+        const ctx = canvas.getContext("2d", {
+          // Multiple readback operations using getImageData are faster
+          // with the willReadFrequently attribute set to true
+          willReadFrequently: true
+        });
         ctx.drawImage(this.img, 0, 0);
 
         const svg = document.createElementNS(SVG_NS, "svg");
+
+        // add gridSize to svg dimensions to account for icon clipping
         svg.setAttribute("width", this.img.width + gridSize);
         svg.setAttribute("height", this.img.height + gridSize);
 
@@ -100,11 +100,7 @@ const DOMContentLoaded = () => {
 
             // color and brightness data
             const color = `rgba(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]}, ${pixelData[3] / 255})`;
-            const brightness = perceivedBrightness(
-              pixelData[0],
-              pixelData[1],
-              pixelData[2]
-            );
+            const brightness = perceivedBrightness(pixelData[0], pixelData[1], pixelData[2]);
 
             // rect based on color for debug
             const rect = document.createElementNS(SVG_NS, "rect");
@@ -113,8 +109,10 @@ const DOMContentLoaded = () => {
             rect.setAttribute("width", gridSize);
             rect.setAttribute("height", gridSize);
             rect.setAttribute("fill", color);
+
+            // show grid color
             if (this.showGrid) {
-              svg.appendChild(rect); // see color of grid
+              svg.appendChild(rect);
             }
 
             // get icon based on brightness
@@ -129,17 +127,14 @@ const DOMContentLoaded = () => {
             const group = document.createElementNS(SVG_NS, "g");
             group.setAttribute( "transform", `translate(${x},${y}), scale(${gridSize / vb[2]}, ${gridSize / vb[3]})`);
 
-            // append all the SVG nodes from the icon file to the group
+            // append all the SVG nodes from the icon file to the bew group
             for (const node of icon.childNodes) {
-              if (
-                node.nodeType === Node.ELEMENT_NODE &&
-                node.tagName !== "script"
-              ) {
+              if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== "script") {
                 const newNode = node.cloneNode(true);
                 group.appendChild(newNode);
               }
             }
-            // append icon (grouped) to svg
+            // append group, containing the icon, to the parent svg
             if (this.showIcons) {
               svg.appendChild(group);
             }
