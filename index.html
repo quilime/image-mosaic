@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Icon Mosaic</title>
+    <link rel="stylesheet" href="dist/output.css" />
+    <script defer src="lib/alpine.persist.min.js"></script>
+    <script defer src="lib/alpine.min.js"></script>
+    <script src="js/script.js"></script>
+    <style>
+      canvas {
+        display: none;
+      }
+      /* #download { display: none; } */
+    </style>
+  </head>
+  <body class="bg-white dark:bg-gray-900 dark:text-gray-50" >
+
+  <div x-data="appData">
+
+    <!-- app -->
+    <div class="ml-64 bg-slate-300">
+      <div class="flex justify-center items-center h-screen overflow-auto">
+        <div id="loader">
+          <div class="lds-dual-ring"></div>
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+        <progress
+          id="progress"
+          style="display: none"
+          max="100"
+          value="0"
+        ></progress>
+
+        <div id="output"></div>
+      </div>
+    </div>
+
+    <!-- sidebar -->
+    <aside class="fixed top-0 left-0 z-40 w-64 h-screen">
+      <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+        <ul class="space-y-2">
+          <li class="m-2">
+            <h1 class="text-2xl">Icon Mosaic</h1>
+          </li>
+          <li class="m-2">
+            Source Image
+            <input type="file" id="inputImage" accept="image/*" />
+          </li>
+
+          <template x-if="imageLoaded">
+            <ul>
+              <li class="m-2">
+                <div>
+                  <label>Grid Size: <span class="inline-block w-2"  x-ref="gridSizeOutput" id="gridSizeOutput">20</span></label>
+                  <br />
+                  <input
+                    x-data="{ gridSize: 20 }"
+                    @input="$refs.gridSizeOutput.innerText = $event.target.value"
+                    id="gridSizeSlider"
+                    type="range"
+                    min="5"
+                    max="100"
+                    value="20"
+                    class="w-full"
+                  />
+                </div>
+              </li>
+              <li class="m-2">
+                <label><input type="checkbox" x-model="showGrid">Show Grid</label>
+              </li>
+              <li class="m-2">
+                <label><input type="checkbox" x-model="showIcons">Show Icons</label>
+              </li>
+              <li class="m-2">
+                <button @click="generate" class="rounded-lg bg-slate-500 p-2 px-5 hover:opacity-80">
+                  Generate
+                </button>
+              </li>
+              <li class="m-2">
+                <a class="rounded-lg inline-block bg-slate-500 p-2 px-5 hover:opacity-80" id="download" href="">Save SVG</a>
+              </li>
+            </ul>
+          </template>
+        </ul>
+      </div>
+    </aside>
+
+  </div>
+
+  </body>
+</html>
