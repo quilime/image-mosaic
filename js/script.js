@@ -36,6 +36,7 @@ const DOMContentLoaded = () => {
       imageLoaded: false,
       showGrid: false,
       showIcons: true,
+      showDownloadLink: false,
       async init() {
 
         // preload icons
@@ -47,10 +48,12 @@ const DOMContentLoaded = () => {
           this.imageLoaded = false;
           const file = e.target.files[0];
           const i = new Image();
+          i.file = file;
           i.src = URL.createObjectURL(file);
           i.onload = async () => {
             this.imageLoaded = true;
             this.img = i;
+            console.log(this.img);
           };
         });
       },
@@ -149,6 +152,8 @@ const DOMContentLoaded = () => {
         const link = document.getElementById("download");
         link.href = URL.createObjectURL(svgBlob);
         link.download = "generated-svg.svg";
+
+        this.showDownloadLink = true;
       }
     }));
 
