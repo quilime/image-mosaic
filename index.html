@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +14,7 @@
   <div x-data="appData">
 
     <!-- app -->
-    <div class="ml-64 dark:bg-slate-300">
+    <div class="ml-64 bg-white">
       <div class="flex justify-center items-center h-screen overflow-auto">
         <canvas class="hidden" id="canvas"></canvas>
         <div id="output"></div>
@@ -32,13 +32,17 @@
 
           <li class="m-2">
             <label for="inputImage" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-slate-500 p-2 px-5 hover:opacity-80">
-              Source Image
+              Select Image
               <input class="hidden" type="file" name="inputImage" id="inputImage" accept="image/*" />
             </label>
           </li>
 
           <template x-if="imageLoaded">
             <ul>
+
+              <li class="m-2">
+                <img :src="img.src">
+              </li>
 
               <li class="m-2">
                 <span class="font-bold" x-text="img.file.name"></span>

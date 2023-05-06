@@ -53,7 +53,6 @@ const DOMContentLoaded = () => {
           i.onload = async () => {
             this.imageLoaded = true;
             this.img = i;
-            console.log(this.img);
           };
         });
       },
@@ -112,7 +111,7 @@ const DOMContentLoaded = () => {
             }
 
             // get icon based on brightness
-            const iconId = Math.floor(mapValue(brightness, 0, 255, 1, this.icons.length));
+            const iconId = Math.floor(mapValue(brightness, 0, 255, 1, this.icons.length-1));
             const icon = this.icons[iconId];
 
             // get the viewbox of the icon
