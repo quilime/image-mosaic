@@ -1,4 +1,18 @@
+
+// SVG namespace
 const SVG_NS = "http://www.w3.org/2000/svg";
+
+// maps a value from one range to another range:
+const mapValue = (v, inMin, inMax, outMin, outMax) => ((v - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+
+// Where R, G, and B are the red, green, and blue values of the color, respectively.
+// This formula is based on the perception of brightness by the human eye, which
+// is more sensitive to green and less sensitive to blue.
+const perceivedBrightness = (R, G, B) => 0.299 * R + 0.587 * G + 0.114 * B;
+
+// gridsize max and min
+const gridMin = 2;
+const gridMax = 100;
 
 const onReady = async () => {};
 const DOMContentLoaded = () => {
@@ -8,14 +22,6 @@ const DOMContentLoaded = () => {
   }
   document.addEventListener("DOMContentLoaded", onReady);
   document.addEventListener("alpine:init", async () => {
-
-    // maps a value from one range to another range:
-    const mapValue = (v, inMin, inMax, outMin, outMax) => ((v - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-
-    // Where R, G, and B are the red, green, and blue values of the color, respectively.
-    // This formula is based on the perception of brightness by the human eye, which
-    // is more sensitive to green and less sensitive to blue.
-    const perceivedBrightness = (R, G, B) => 0.299 * R + 0.587 * G + 0.114 * B;
 
     Alpine.data("appData", () => ({
       icons: Alpine.$persist([]),
@@ -42,15 +48,6 @@ const DOMContentLoaded = () => {
             this.imageLoaded = true;
             this.img = i;
           };
-        });
-
-        // keypress event listener for generate
-        document.addEventListener('keypress', (e) => {
-          if (!this.imageLoaded) return;
-          if (e.key == 'g') {
-            const generateButton = document.getElementById("generate");
-            generateButton.click();
-          }
         });
       },
       async loadIcons() {
@@ -89,7 +86,6 @@ const DOMContentLoaded = () => {
         svg.setAttribute("width", this.img.width + gridSize);
         svg.setAttribute("height", this.img.height + gridSize);
 
-        const total = ((this.img.height / gridSize) * this.img.width) / gridSize;
         for (let y = 0; y < this.img.height; y += gridSize) {
           for (let x = 0; x < this.img.width; x += gridSize) {
 
@@ -102,7 +98,7 @@ const DOMContentLoaded = () => {
             const color = `rgba(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]}, ${pixelData[3] / 255})`;
             const brightness = perceivedBrightness(pixelData[0], pixelData[1], pixelData[2]);
 
-            // rect based on color for debug
+            // rect based on color
             const rect = document.createElementNS(SVG_NS, "rect");
             rect.setAttribute("x", x);
             rect.setAttribute("y", y);
@@ -116,14 +112,14 @@ const DOMContentLoaded = () => {
             }
 
             // get icon based on brightness
-            const iconId = Math.floor(mapValue(brightness, 0, 255, 1, this.icons.length-1));
+            const iconId = Math.floor(mapValue(brightness, 0, 255, 1, this.icons.length - 1));
             const icon = this.icons[iconId];
 
             // get the viewbox of the icon
             const viewBoxStr = icon.getAttribute("viewBox");
             const vb = viewBoxStr.split(" ");
 
-            // transform the icon to fit in the grid
+            // transform the icon, based on its viewbox size, to fit in the grid
             const group = document.createElementNS(SVG_NS, "g");
             group.setAttribute( "transform", `translate(${x},${y}), scale(${gridSize / vb[2]}, ${gridSize / vb[3]})`);
 
@@ -140,6 +136,8 @@ const DOMContentLoaded = () => {
             }
           }
         }
+
+        // append svg to output element
         output.appendChild(svg);
 
         // serialize svg into string for saving
@@ -149,7 +147,7 @@ const DOMContentLoaded = () => {
           type: "image/svg+xml;charset=utf-8",
         });
 
-        // Create a download link and trigger a click event
+        // Create a download link
         const link = document.getElementById("download");
         link.href = URL.createObjectURL(svgBlob);
         link.download = "generated-svg.svg";
