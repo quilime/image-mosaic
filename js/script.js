@@ -1,4 +1,3 @@
-
 // SVG namespace
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -28,6 +27,7 @@ const DOMContentLoaded = () => {
       img: new Image(),
       imageLoaded: false,
       gridSize: 20,
+      progress: 0,
       showGrid: false,
       showIcons: true,
       showDownloadLink: false,
@@ -61,6 +61,23 @@ const DOMContentLoaded = () => {
           arr.push(parser.parseFromString(svgText, "image/svg+xml").documentElement);
         }
         return arr;
+      },
+      async generate2() {
+        const totalIterations = 1000;
+        let currentIteration = 0;
+        const loop = () => {
+          if (currentIteration < totalIterations) {
+            // Your loop logic here
+            currentIteration++;
+
+            // Update progress
+            this.progress = Math.floor((currentIteration / totalIterations) * 100);
+
+            // Continue loop in the next frame
+            requestAnimationFrame(loop);
+          }
+        }
+        loop();
       },
       async generate() {
 

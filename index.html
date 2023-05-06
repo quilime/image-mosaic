@@ -29,6 +29,14 @@
           <li>
             <h1 class="text-2xl">Icon Mosaic</h1>
           </li>
+
+          <li>
+            <progress id="progress" x-model="progress" max="100"></progress>
+            <span x-text="progress"></span>
+            <br />
+            <button @click="generate2">Gen2</button>
+          </li>
+
           <li>
             <label for="inputImage" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-slate-500 p-2 px-5 hover:opacity-80">
               Select Image
