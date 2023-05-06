@@ -3,7 +3,7 @@
 ## TODO
 
 - [ ] Assemble Icon Set
-- [ ] Custom icons?
+- [ ] Custom icons
 
 ## Development Installation
 

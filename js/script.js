@@ -27,7 +27,7 @@ const DOMContentLoaded = () => {
       img: new Image(),
       imageLoaded: false,
       gridSize: 20,
-      progress: 0,
+      isGenerating: false,
       showGrid: false,
       showIcons: true,
       showDownloadLink: false,
@@ -62,22 +62,12 @@ const DOMContentLoaded = () => {
         }
         return arr;
       },
-      async generate2() {
-        const totalIterations = 1000;
-        let currentIteration = 0;
-        const loop = () => {
-          if (currentIteration < totalIterations) {
-            // Your loop logic here
-            currentIteration++;
-
-            // Update progress
-            this.progress = Math.floor((currentIteration / totalIterations) * 100);
-
-            // Continue loop in the next frame
-            requestAnimationFrame(loop);
-          }
-        }
-        loop();
+      async startGenerating() {
+        this.isGenerating = true;
+        setTimeout(async () => {
+          await this.generate();
+          this.isGenerating = false;
+        }, 150);
       },
       async generate() {
 

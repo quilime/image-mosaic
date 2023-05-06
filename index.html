@@ -26,15 +26,8 @@
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-200 dark:bg-gray-800 overflow-hidden">
         <ul class="space-y-3">
 
-          <li>
-            <h1 class="text-2xl">Icon Mosaic</h1>
-          </li>
-
-          <li>
-            <progress id="progress" x-model="progress" max="100"></progress>
-            <span x-text="progress"></span>
-            <br />
-            <button @click="generate2">Gen2</button>
+          <li class="text-2xl">
+            Icon Mosaic
           </li>
 
           <li>
@@ -68,8 +61,12 @@
                 <label><input type="checkbox" x-model="showIcons">Show Icons</label>
               </li>
               <li>
-                <button id="generate" @click="generate" class="rounded-lg  bg-slate-300 dark:bg-cyan-600 p-2 px-5 hover:opacity-80">
+                <button @click="startGenerating" class="rounded-lg  bg-slate-300 dark:bg-cyan-600 p-2 px-5 hover:opacity-80">
                   Generate
+                  <div :class="!isGenerating && 'hidden'"
+                  class="inline-block ml-1 h-4 w-4 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                  role="status">
+                  </div>
                 </button>
               </li>
               <li>
