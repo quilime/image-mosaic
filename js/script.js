@@ -63,7 +63,10 @@ const DOMContentLoaded = () => {
         return arr;
       },
       async startGenerating() {
+        // set isGenerating to true before hitting the actual generate function to update the UI
         this.isGenerating = true;
+        // set a timeout to the generation loop as it locks the
+        // thread and we can't update the UI until it's done
         setTimeout(async () => {
           await this.generate();
           this.isGenerating = false;
