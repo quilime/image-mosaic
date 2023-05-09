@@ -65,11 +65,13 @@ const DOMContentLoaded = () => {
       async startGenerating() {
         // set isGenerating to true before hitting the actual generate function to update the UI
         this.isGenerating = true;
+        this.showDownloadLink = false;
         // set a timeout to the generation loop as it locks the
         // thread and we can't update the UI until it's done
         setTimeout(async () => {
           await this.generate();
           this.isGenerating = false;
+          this.showDownloadLink = true;
         }, 150);
       },
       async generate() {
@@ -161,9 +163,6 @@ const DOMContentLoaded = () => {
         const link = document.getElementById("download");
         link.href = URL.createObjectURL(svgBlob);
         link.download = "generated-svg.svg";
-
-        // show the download link
-        this.showDownloadLink = true;
       }
     }));
   });
