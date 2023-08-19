@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,18 +24,26 @@
     <!-- sidebar -->
     <aside class="fixed top-0 left-0 z-40 w-64 h-screen">
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-200 dark:bg-gray-900 overflow-hidden">
-        <ul class="space-y-3">
+        
+          <h1 class="text-3xl">
+            Symbol Mosaic
+          </h1>
 
-          <li class="text-2xl">
-            Icon Mosaic
-          </li>
+          <p class="my-3">
+            A char-to-image or icon-to-image mosaic generator that can 
+            create images from either light-do-dark ascii character map, 
+            or set of SVG icons.
+          </p>
 
-          <li>
-            <label for="inputImage" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-gray-900 p-2 px-5 hover:opacity-80">
-              Select Image
-              <input class="hidden" type="file" name="inputImage" id="inputImage" accept="image/*" />
+          <p class="mt-8 mb-10">
+            <label for="inputIcons" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-gray-900 p-2 px-5 hover:opacity-80">
+              Select Icons
+              <input class="hidden" id="inputIcons" name="inputIcons"  type="file" accept="image/svg+xml" multiple @change="uploadIcons($event)">
             </label>
-          </li>
+          </p>
+
+          <p x-text="icons">
+          </p>
 
           <!-- show controls when image is loaded -->
           <template x-if="imageLoaded">
@@ -44,8 +52,11 @@
                 <img :src="img.src">
               </li>
               <li>
-                <span class="font-bold" x-text="img.file.name"></span>
-              </li>
+                <label for="inputImage" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-gray-900 p-2 px-5 hover:opacity-80">
+                  Select Source Image
+                  <input class="hidden" type="file" name="inputImage" id="inputImage" accept="image/*" />
+                </label>
+              </li>              
               <li>
                 <div>
                   <label>Grid Size</label>
@@ -75,7 +86,7 @@
             </ul>
           </template>
 
-        </ul>
+        
       </div>
     </aside>
   </div>

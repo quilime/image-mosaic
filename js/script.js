@@ -2,7 +2,8 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 // maps a value from one range to another range:
-const mapValue = (v, inMin, inMax, outMin, outMax) => ((v - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+const mapValue = (v, inMin, inMax, outMin, outMax) =>
+  ((v - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 
 // Where R, G, and B are the red, green, and blue values of the color, respectively.
 // This formula is based on the perception of brightness by the human eye, which
@@ -21,44 +22,70 @@ const DOMContentLoaded = () => {
   }
   document.addEventListener("DOMContentLoaded", onReady);
   document.addEventListener("alpine:init", async () => {
-
     Alpine.data("appData", () => ({
       icons: Alpine.$persist([]),
       img: new Image(),
-      imageLoaded: false,
+      imageLoaded: true,
       gridSize: 20,
       isGenerating: false,
+      gridType: "ascii",
+      charMap: " .:-=+*#%@",
       showGrid: false,
       showIcons: true,
       showDownloadLink: false,
       async init() {
-
         // preload icons
         this.icons = await this.loadIcons();
 
         // event listener to image input
         const inputImage = document.getElementById("inputImage");
         inputImage.addEventListener("change", (e) => {
-          this.imageLoaded = false;
+          // this.imageLoaded = false;
           const file = e.target.files[0];
           const i = new Image();
-          i.file = file;
-          i.src = URL.createObjectURL(file);
-          i.onload = async () => {
-            this.imageLoaded = true;
-            this.img = i;
-          };
+          if (file) {
+            i.file = file;
+            i.src = URL.createObjectURL(file);
+            i.onload = async () => {
+              // this.imageLoaded = true;
+              this.img = i;
+            };
+          }
         });
+        
+        this.img = new Image();        
+        this.img.src = 'static/test-bw.png';
+        this.img.file = { name: 'test.bw.png' };
+        // this.imageLoaded = true;
+      },
+      uploadIcons(event) {
+        // Get files from the input
+        let files = event.target.files;
+        this.icons = [];
+        // Read each file and add to icons array
+        for (let i = 0; i < files.length; i++) {
+          let reader = new FileReader();
+          reader.onload = (e) => {
+            const parser = new DOMParser();
+            this.icons.push(
+              parser.parseFromString(e.target.result, "image/svg+xml")
+                .documentElement
+            );
+          };
+          reader.readAsText(files[i]);
+        }
       },
       async loadIcons() {
         // numIcons is hardcoded for now
         const numIcons = 5;
         let arr = [];
         for (var i = 1; i <= numIcons; i++) {
-          const response = await fetch(`./static/icons/icon-${i}.svg`);
+          const response = await fetch(`./static/icons2/icon-${i}.svg`);
           const svgText = await response.text();
           const parser = new DOMParser();
-          arr.push(parser.parseFromString(svgText, "image/svg+xml").documentElement);
+          arr.push(
+            parser.parseFromString(svgText, "image/svg+xml").documentElement
+          );
         }
         return arr;
       },
@@ -75,7 +102,6 @@ const DOMContentLoaded = () => {
         }, 150);
       },
       async generate() {
-
         const output = document.getElementById("output");
         output.innerHTML = "";
 
@@ -88,7 +114,7 @@ const DOMContentLoaded = () => {
         const ctx = canvas.getContext("2d", {
           // Multiple readback operations using getImageData are faster
           // with the willReadFrequently attribute set to true
-          willReadFrequently: true
+          willReadFrequently: true,
         });
         ctx.drawImage(this.img, 0, 0);
 
@@ -100,15 +126,20 @@ const DOMContentLoaded = () => {
 
         for (let y = 0; y < this.img.height; y += gridSize) {
           for (let x = 0; x < this.img.width; x += gridSize) {
-
             // analyze pixel in the middle of the grid size
             const dx = Math.min(this.img.width - 1, x + gridSize / 2);
             const dy = Math.min(this.img.height - 1, y + gridSize / 2);
             const pixelData = ctx.getImageData(dx, dy, 1, 1).data;
 
             // color and brightness data
-            const color = `rgba(${pixelData[0]}, ${pixelData[1]}, ${pixelData[2]}, ${pixelData[3] / 255})`;
-            const brightness = perceivedBrightness(pixelData[0], pixelData[1], pixelData[2]);
+            const color = `rgba(${pixelData[0]}, ${pixelData[1]}, ${
+              pixelData[2]
+            }, ${pixelData[3] / 255})`;
+            const brightness = perceivedBrightness(
+              pixelData[0],
+              pixelData[1],
+              pixelData[2]
+            );
 
             // rect based on color
             const rect = document.createElementNS(SVG_NS, "rect");
@@ -124,7 +155,9 @@ const DOMContentLoaded = () => {
             }
 
             // get icon based on brightness
-            const iconId = Math.floor(mapValue(brightness, 0, 255, 1, this.icons.length - 1));
+            const iconId = Math.floor(
+              mapValue(brightness, 0, 255, 1, this.icons.length - 1)
+            );
             const icon = this.icons[iconId];
 
             // get the viewbox of the icon
@@ -133,11 +166,19 @@ const DOMContentLoaded = () => {
 
             // transform the icon, based on its viewbox size, to fit in the grid
             const group = document.createElementNS(SVG_NS, "g");
-            group.setAttribute( "transform", `translate(${x},${y}), scale(${gridSize / vb[2]}, ${gridSize / vb[3]})`);
+            group.setAttribute(
+              "transform",
+              `translate(${x},${y}), scale(${gridSize / vb[2]}, ${
+                gridSize / vb[3]
+              })`
+            );
 
             // append all the SVG nodes from the icon file to the bew group
             for (const node of icon.childNodes) {
-              if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== "script") {
+              if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.tagName !== "script"
+              ) {
                 const newNode = node.cloneNode(true);
                 group.appendChild(newNode);
               }
@@ -163,7 +204,7 @@ const DOMContentLoaded = () => {
         const link = document.getElementById("download");
         link.href = URL.createObjectURL(svgBlob);
         link.download = "generated-svg.svg";
-      }
+      },
     }));
   });
 };
