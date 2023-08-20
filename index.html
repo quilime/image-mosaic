@@ -25,24 +25,21 @@
     <aside class="fixed top-0 left-0 z-40 w-64 h-screen">
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-200 dark:bg-gray-900 overflow-hidden">
         
-          <h1 class="text-3xl">
-            Symbol Mosaic
+          <h1 class="text-3xl mb-5">
+            Icon Mosaic
           </h1>
 
-          <p class="my-3">
-            A char-to-image or icon-to-image mosaic generator that can 
-            create images from either light-do-dark ascii character map, 
-            or set of SVG icons.
+          <p>
+            <template x-for="svgString in renderIcons()">
+              <div class="w-5 h-5 inline-block" x-html="svgString"></div>
+            </template>
           </p>
 
-          <p class="mt-8 mb-10">
+          <p class="mt-1 mb-10">
             <label for="inputIcons" class="cursor-pointer rounded-lg  bg-slate-300 dark:bg-gray-900 p-2 px-5 hover:opacity-80">
               Select Icons
               <input class="hidden" id="inputIcons" name="inputIcons"  type="file" accept="image/svg+xml" multiple @change="uploadIcons($event)">
             </label>
-          </p>
-
-          <p x-text="icons">
           </p>
 
           <!-- show controls when image is loaded -->

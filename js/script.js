@@ -54,10 +54,15 @@ const DOMContentLoaded = () => {
         });
         
         this.img = new Image();        
-        this.img.src = 'static/test-bw.png';
-        this.img.file = { name: 'test.bw.png' };
+        this.img.src = 'static/venus.png';
+        this.img.file = { name: 'venus.png' };
         // this.imageLoaded = true;
       },
+      renderIcons() {
+        return this.icons.map(function(svgElement) {
+          return svgElement.outerHTML;
+        });
+      },  
       uploadIcons(event) {
         // Get files from the input
         let files = event.target.files;
@@ -68,8 +73,7 @@ const DOMContentLoaded = () => {
           reader.onload = (e) => {
             const parser = new DOMParser();
             this.icons.push(
-              parser.parseFromString(e.target.result, "image/svg+xml")
-                .documentElement
+              parser.parseFromString(e.target.result, "image/svg+xml").documentElement
             );
           };
           reader.readAsText(files[i]);
@@ -80,7 +84,7 @@ const DOMContentLoaded = () => {
         const numIcons = 5;
         let arr = [];
         for (var i = 1; i <= numIcons; i++) {
-          const response = await fetch(`./static/icons2/icon-${i}.svg`);
+          const response = await fetch(`./static/icons/icon-${i}.svg`);
           const svgText = await response.text();
           const parser = new DOMParser();
           arr.push(
