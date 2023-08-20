@@ -1,9 +1,6 @@
 # Icon Mosaic
 
-## TODO
-
-- [ ] Assemble Icon Set
-- [ ] Custom icons
+Generate a mosaic version of a source image using a series of icons.
 
 ## Development Installation
 
