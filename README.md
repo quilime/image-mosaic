@@ -2,6 +2,8 @@
 
 Generate a mosaic version of a source image using a series of icons.
 
+Demo &rarr; [https://quilime.github.io/image-mosaic/](https://quilime.github.io/image-mosaic/)
+
 ## Development Installation
 
 ```bash
